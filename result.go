@@ -2,6 +2,7 @@ package blast
 
 import (
 	"encoding/xml"
+	"fmt"
 )
 
 type BlastOutput struct {
@@ -67,4 +68,13 @@ type Hsp struct {
 
 func NewBlastOutput() *BlastOutput {
 	return &BlastOutput{}
+}
+
+func (bo *BlastOutput) PrintSummary() {
+	if len(bo.Iterations) == 0 {
+		panic("Blast output is empty!")
+	}
+	for _, iter := range bo.Iterations {
+		fmt.Printf("%s\t%d\n", iter.QueryDef, len(iter.Hits))
+	}
 }

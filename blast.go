@@ -28,12 +28,12 @@ func NewBlast() *Blast {
 
 func (b *Blast) AddQuery(s seq.Seq) {
 	b.Queries = append(b.Queries, s)
-
-	/*bb := bufio.NewWriter(&b.Queries)
-	io := fasta.NewWriter(bb)
-	io.Write(*s)
-	io.Flush()*/
 	b.Nqueries++
+}
+
+func (b *Blast) ResetQuery() {
+	b.Queries = nil
+	b.Nqueries = 0
 }
 
 func (b *Blast) Search() error {
@@ -60,16 +60,19 @@ func (b *Blast) Search() error {
 	}
 	cmd.Stdin = &queryIn
 
-	// Run the command and catch stdout
+	// Run the command and catch stdout and stderr
 	out, err := cmd.Output()
 	if err != nil {
 		return err
 	}
 
-	err = xml.Unmarshal(out, b.Rst)
+	// Parse the output if possible
+	if b.Par.GetOutput() == "stdout" && b.Par.GetOutfmt() == "5" {
+		err = xml.Unmarshal(out, b.Rst)
 
-	if err != nil && err != io.EOF {
-		return err
+		if err != nil && err != io.EOF {
+			return err
+		}
 	}
 
 	return nil
