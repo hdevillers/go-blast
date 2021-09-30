@@ -42,7 +42,7 @@ type Hit struct {
 	HitNum       int      `xml:"Hit_num"`
 	HitId        string   `xml:"Hit_id"`
 	HitDef       string   `xml:"Hit_def"`
-	HitAccession int      `xml:"Hit_accession"`
+	HitAccession string   `xml:"Hit_accession"`
 	HitLen       int      `xml:"Hit_len"`
 	HitHsps      []Hsp    `xml:"Hit_hsps>Hsp"`
 }
