@@ -9,8 +9,10 @@ import (
 
 func main() {
 	query := flag.String("query", "", "Input query file.")
-	db := flag.String("db", "", "BLAST Database path.")
 	format := flag.String("format", "fasta", "Input query format.")
+	db := flag.String("db", "", "BLAST Database path.")
+	header := flag.String("header", "", "Required header for the summary.")
+	maxHit := flag.Int("max-hits", 100, "Maximal number of hit to report.")
 
 	flag.Parse()
 
@@ -41,5 +43,5 @@ func main() {
 		panic(err)
 	}
 
-	blast.Rst.PrintSummary()
+	blast.Rst.BestHspSummary(*header, *maxHit)
 }
