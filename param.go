@@ -2,6 +2,7 @@ package blast
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 )
 
@@ -68,22 +69,23 @@ func (p *Param) GetOutput() string {
 
 // GENERATE THE COMMAND LINE
 func (p *Param) GetCmd(db string) *exec.Cmd {
-	if p.output == "stdout" {
-		return exec.Command(
-			p.tool,
-			"-db", db,
-			"-evalue", fmt.Sprintf("%f", p.evalue),
-			"-num_threads", fmt.Sprintf("%d", p.threads),
-			"-outfmt", p.outfmt,
-		)
-	} else {
-		return exec.Command(
-			p.tool,
-			"-db", db,
-			"-evalue", fmt.Sprintf("%f", p.evalue),
-			"-num_threads", fmt.Sprintf("%d", p.threads),
-			"-outfmt", p.outfmt,
-			"-out", p.output,
-		)
+	cmd := exec.Command(
+		p.tool,
+		"-evalue", fmt.Sprintf("%f", p.evalue),
+		"-num_threads", fmt.Sprintf("%d", p.threads),
+		"-outfmt", p.outfmt,
+	)
+	// If defined a dedicated output file
+	if p.output != "stdout" {
+		cmd.Args = append(cmd.Args, "-out", p.output)
 	}
+	// Add the DB of the subject
+	// If the file exists, then it must be a subject file
+	if _, err := os.Stat(db); os.IsNotExist(err) {
+		cmd.Args = append(cmd.Args, "-db", db)
+	} else {
+		cmd.Args = append(cmd.Args, "-subject", db)
+	}
+
+	return cmd
 }
