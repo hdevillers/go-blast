@@ -17,6 +17,9 @@ func main() {
 	maxHit := flag.Int("max-hits", 100, "Maximal number of hit to report.")
 	tool := flag.String("tool", "blastp", "BLAST+ tool to use.")
 	task := flag.String("task", "", "Specify the BLAST+ task to run (default = same as tool).")
+	evalue := flag.Float64("evalue", 0.001, "E-value threshold.")
+	filterLC := flag.Bool("filter-lc", false, "Filter low complexity region in query.")
+	threads := flag.Int("threads", 2, "Number of threads.")
 	showTool := flag.Bool("tool-list", false, "Display the list of available tools.")
 
 	flag.Parse()
@@ -59,6 +62,9 @@ func main() {
 		*task = *tool
 	}
 	blast.Par.SetTask(*task)
+	blast.Par.SetFilterLC(*filterLC)
+	blast.Par.SetEvalue(*evalue)
+	blast.Par.SetThreads(*threads)
 
 	// Load query files
 	reader := seqio.NewReader(*query, *format, false)

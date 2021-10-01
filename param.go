@@ -7,21 +7,23 @@ import (
 )
 
 const (
-	D_TOOL    string  = "blastp"
-	D_EVALUE  float64 = 0.001
-	D_THREADS int     = 2
-	D_OUTFMT  string  = "5"
-	D_OUTPUT  string  = "stdout"
+	D_TOOL     string  = "blastp"
+	D_EVALUE   float64 = 0.001
+	D_THREADS  int     = 2
+	D_OUTFMT   string  = "5"
+	D_OUTPUT   string  = "stdout"
+	D_FILTERLC bool    = false
 )
 
 type Param struct {
-	tool    string
-	task    string
-	evalue  float64
-	threads int
-	outfmt  string
-	output  string
-	chkTask map[string]map[string]int
+	tool     string
+	task     string
+	filterLC bool
+	evalue   float64
+	threads  int
+	outfmt   string
+	output   string
+	chkTask  map[string]map[string]int
 }
 
 func NewParam() *Param {
@@ -32,6 +34,7 @@ func NewParam() *Param {
 	p.threads = D_THREADS
 	p.outfmt = D_OUTFMT
 	p.output = D_OUTPUT
+	p.filterLC = D_FILTERLC
 	p.chkTask = make(map[string]map[string]int)
 	p.chkTask["blastn"] = map[string]int{"blastn": 1, "megablast": 1, "dc-megablast": 1, "blastn-short": 1}
 	p.chkTask["blastp"] = map[string]int{"blastp": 1, "blastp-short": 1, "blastp-fast": 1}
@@ -49,6 +52,9 @@ func (p *Param) SetTask(t string) {
 }
 func (p *Param) SetEvalue(e float64) {
 	p.evalue = e
+}
+func (p *Param) SetFilterLC(f bool) {
+	p.filterLC = f
 }
 func (p *Param) SetThreads(t int) {
 	p.threads = t
@@ -69,6 +75,9 @@ func (p *Param) GetTask() string {
 }
 func (p *Param) GetEvalue() float64 {
 	return p.evalue
+}
+func (p *Param) GetFilterLC() bool {
+	return p.filterLC
 }
 func (p *Param) GetThreads() int {
 	return p.threads
@@ -113,6 +122,16 @@ func (p *Param) GetCmd(db string) *exec.Cmd {
 			panic(fmt.Sprintf("The task %s is not available for the tool %s.", p.task, p.tool))
 		}
 	}
+	// Manage low complexity filters
+	farg := "-seg"
+	fval := "no"
+	if p.tool == "blastn" {
+		farg = "-dust"
+	}
+	if p.filterLC {
+		fval = "yes"
+	}
+	cmd.Args = append(cmd.Args, farg, fval)
 
 	return cmd
 }
