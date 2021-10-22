@@ -110,6 +110,19 @@ const (
 	DRO string = "%03f"
 )
 
+// Because BLAST keeps hit ID merged with the description
+// we use the two folling method to extract properly
+// these informations
+func (h *Hit) GetHitId() string {
+	tmp := strings.Split(h.HitDef, " ")
+	return tmp[0]
+}
+
+func (h *Hit) GetHitDesc() string {
+	tmp := strings.SplitN(h.HitDef, " ", 2)
+	return tmp[1]
+}
+
 func (h *Hsp) GetHspStat(ql int, hl int) map[string]float64 {
 	hs := make(map[string]float64)
 
