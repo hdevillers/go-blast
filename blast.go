@@ -32,6 +32,8 @@ func (b *Blast) AddQuery(s seq.Seq) {
 }
 
 func (b *Blast) ResetQuery() {
+	// Reset both results and query data
+	b.Rst = NewBlastOutput()
 	b.Queries = nil
 	b.Nqueries = 0
 }
